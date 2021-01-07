@@ -11,7 +11,17 @@
     </nav>
     <form action="/ADDLOG">
         <h1>
+            {% if lost_user %}
+            <select name="building" id="building selector">
+                {% for building in all_buildings %}
+                <option value="{{building}}">{{building}}</option>
+                {% endfor %}
+            </select>
+            {% else %}
             {{building}}
+            {% endif %}
+            
+                
         </h1>
         <div>
             <h3>First Name</h3>
@@ -20,7 +30,9 @@
             <input type="text" name="last_name" id="last_name_input">
             <input type="hidden" name="date" value="{{current_Date}}">
             <input type="hidden" name="time" value="{{current_Time}}">
-            <input type="hidden" name="building" value="{{building}}">
+            {% if lost_user == False %}
+                <input type="hidden" name="building" value="{{building}}">
+            {% endif %}
         </div>
         <div>
             <button name='INOROUT' value="IN">In</button>

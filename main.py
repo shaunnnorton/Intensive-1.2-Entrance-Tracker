@@ -7,12 +7,32 @@ app = Flask('__main__')
 client = MongoClient('mongodb://localhost:27017')
 buildings = client.Attendence.Buildings
 Logs = client.Attendence.BuildingLogs
+
+@app.route("/")
+def homepage():
+    
+    list_of_buildings = list()
+    for i in buildings.find({},{'name':1}):
+        list_of_buildings.append(i['name'])
+
+    context = {
+        'all_buildings': list_of_buildings,
+        'lost_user':True,
+        'current_Date':time.strftime('%a %b %d, %Y',time.localtime()),
+        'current_Time':time.strftime('%I:%M %p',time.localtime()),
+    }
+    print(list_of_buildings)
+    return render_template('base.html',**context)
+
+
+
 @app.route('/<building>')
-def homepage(building):
+def logspage(building):
     context={
         'current_Date':time.strftime('%a %b %d, %Y',time.localtime()),
         'current_Time':time.strftime('%I:%M %p',time.localtime()),
-        'building':building
+        'building':building,
+        'lost_user':False
     }
     
     
@@ -36,30 +56,30 @@ def add_values():
             if date in working_building:
                 working_building[date][first_name+' '+last_name] = {'IN':time,"OUT":'None'}
                 buildings.update_one({'name': building},{ '$set':{date: working_building[date]}})
-                return working_building
+                return redirect("/")
             else:
                 working_building[date] = {first_name+' '+last_name:{'IN':time,"OUT":'None'}}
                 buildings.update_one({'name': building},{ '$set':{date: {first_name+' '+last_name:{'IN':time,"OUT":'None'}}}})
             
             
-                return working_building
+                return redirect("/")
         if INOROUT == "OUT":
             working_building = buildings.find_one({'name': building},{'_id':0,date:1})
             #return working_building
             if date in working_building:
                 working_building[date][first_name+' '+last_name]['OUT'] = time
                 buildings.update_one({'name': building},{ '$set':{date: working_building[date]}})
-                return working_building
+                return redirect("/")
             else:
                 working_building[date] = {first_name+' '+last_name:{'IN':"None","OUT":time}}
                 buildings.update_one({'name': building},{ '$set':{date: {first_name+' '+last_name:{'IN':time,"OUT":'None'}}}})
             
             
-                return working_building
+                return redirect("/")
 
     else:
         
-        return (f'{building} is not in a building try a different URL')
+        return redirect("/")
 
 
 
