@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrance Log</title>
+</head>
+<body>
+    <nav>
+        <button>Sign IN</button>
+    </nav>
+    <form action="/ADDLOG">
+        <h1>
+            {{building}}
+        </h1>
+        <div>
+            <h3>First Name</h3>
+            <input type="text" name="first_name" id="first_name_input">
+            <h3>Last Name</h3>
+            <input type="text" name="last_name" id="last_name_input">
+            <input type="hidden" name="date" value="{{current_Date}}">
+            <input type="hidden" name="time" value="{{current_Time}}">
+            <input type="hidden" name="building" value="{{building}}">
+        </div>
+        <div>
+            <button name='INOROUT' value="IN">In</button>
+            <button name='INOROUT' value="OUT">Out</button>
+        </div>
+    </form>
+</body>
+</html>
