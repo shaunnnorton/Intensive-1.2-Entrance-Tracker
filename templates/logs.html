@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrance Log</title>
+    <link rel="stylesheet" href="static/styles.css">
+
+</head>
+<body>
+    <nav>
+        <button id="SIBUTTON">Sign IN</button>
+        <form action="/Logs" id="signin_form">
+            <h2>Username:</h2>
+            <input type="text" name="Username" id="UN">
+            <h2>Password:</h2>
+            <input type="text" name="Password" id="PW">
+            <button>Sign In</button>
+        </form>
+    </nav>
+    <form action="" method="POST">
+        <select name="building" id="BLD">
+            {% for building in buildings %}
+            <option value="{{building}}">{{building}}</option>
+            {% endfor %}
+        </select>
+        {% if dates|length > 0 %}
+        <select name="date" id="DTE">
+            {% for date in dates %}
+            <option value="{{date}}">{{date}}</option>
+            {% endfor %}
+        </select>
+        {% endif %}
+        <button>GO</button>
+    </form>
+    <ul>
+        {% for item in logs %}
+        <li>{{item}}</li>
+        {% endfor %}
+    </ul>
+</body>
+<script src="static/main.js"></script>
+</html>

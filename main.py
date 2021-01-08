@@ -75,6 +75,39 @@ def add_values():
         return render_template('message.html',message=message)
 
 
+@app.route("/Logs",methods=['GET','POST'])
+def open_logs():
+    if request.method == "GET":    
+        list_of_buildings = list()
+        for i in buildings.find({},{'name':1}):
+            list_of_buildings.append(i['name'])
+        context = {
+            'buildings':list_of_buildings
+        }
 
+        return render_template('logs.html',**context)
+    elif request.method == "POST":
+        list_of_buildings = list()
+        for i in buildings.find({},{'name':1}):
+            list_of_buildings.append(i['name'])
+
+        building = request.form.get('building')
+        dates = []
+        for i in buildings.find({'name':building},{'_id':0,'name':0}):
+            dates+=list(i.keys())
+        
+        date = request.form.get('date')
+        day_logs = buildings.find_one({'name':building},{date:1,"_id":0})
+        print(day_logs)
+        logs = list()
+        for i in list(day_logs[date].keys()):
+            logs.append(f'{i}  {day_logs[date][i]["IN"]}     {day_logs[date][i]["OUT"]}')
+            
+        context = {
+            'buildings':list_of_buildings,
+            'dates':dates,
+            'logs':logs
+        }
+        return render_template('logs.html', **context)
 if __name__ == "__main__":
     app.run(debug=True)
