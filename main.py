@@ -1,6 +1,14 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for, make_response
 from pymongo import MongoClient
+from dotenv import load_dotenv
+import os
 import time
+
+load_dotenv()
+
+ADMIN_USERNAME = os.getenv('ADMIN_USERNAME')
+ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
+SECRETKEY = os.getenv('SECRETKEY')
 
 app = Flask('__main__')
 
@@ -75,39 +83,51 @@ def add_values():
         return render_template('message.html',message=message)
 
 
-@app.route("/Logs",methods=['GET','POST'])
+@app.route("/Logs",methods=['POST'])
 def open_logs():
-    if request.method == "GET":    
-        list_of_buildings = list()
-        for i in buildings.find({},{'name':1}):
-            list_of_buildings.append(i['name'])
-        context = {
-            'buildings':list_of_buildings
-        }
-
-        return render_template('logs.html',**context)
-    elif request.method == "POST":
-        list_of_buildings = list()
-        for i in buildings.find({},{'name':1}):
-            list_of_buildings.append(i['name'])
-
-        building = request.form.get('building')
-        dates = []
-        for i in buildings.find({'name':building},{'_id':0,'name':0}):
-            dates+=list(i.keys())
+    if request.cookies.get("SECRETKEY") != SECRETKEY:
+        return redirect(url_for('homepage'))   
+    list_of_buildings = list()
+    for i in buildings.find({},{'name':1}):
+        list_of_buildings.append(i['name'])
+    context = {
+        'buildings':list_of_buildings
+    }
+    list_of_buildings = list()
+    for i in buildings.find({},{'name':1}):
+        list_of_buildings.append(i['name'])
+    
+    logs = list()
+    building = request.form.get('building')
+    dates = []
+    date = request.form.get('date')
+    
+    for i in buildings.find({'name':building},{'_id':0,'name':0}):
+        dates+=list(i.keys())
         
-        date = request.form.get('date')
+    if date:   
         day_logs = buildings.find_one({'name':building},{date:1,"_id":0})
         print(day_logs)
-        logs = list()
-        for i in list(day_logs[date].keys()):
-            logs.append(f'{i}  {day_logs[date][i]["IN"]}     {day_logs[date][i]["OUT"]}')
-            
-        context = {
-            'buildings':list_of_buildings,
-            'dates':dates,
-            'logs':logs
-        }
-        return render_template('logs.html', **context)
+        if len(day_logs.keys()) > 0:
+            for i in list(day_logs[date].keys()):
+                logs.append(f'{i}  {day_logs[date][i]["IN"]}     {day_logs[date][i]["OUT"]}')
+        
+    context = {
+        'buildings':list_of_buildings,
+        'dates':dates,
+        'logs':logs
+    }
+    return render_template('logs.html', **context)
+
+@app.route("/login",methods=["POST"])
+def login():
+    username = request.form.get('Username')
+    password = request.form.get('Password')
+    if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+        response = make_response(redirect(url_for('open_logs',_method="POST"),307))
+        response.set_cookie('SECRETKEY',SECRETKEY)
+        return response
+    else:
+        return render_template("message.html",message="Your Username or Password were incorrect.")  
 if __name__ == "__main__":
     app.run(debug=True)

@@ -10,7 +10,7 @@
 <body>
     <nav>
         <button id="SIBUTTON">Sign IN</button>
-        <form action="/Logs" id="signin_form">
+        <form action="{{url_for('login')}}" id="signin_form" method="POST">
             <h2>Username:</h2>
             <input type="text" name="Username" id="UN">
             <h2>Password:</h2>
