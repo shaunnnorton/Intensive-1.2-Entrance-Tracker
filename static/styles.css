@@ -23,3 +23,9 @@ nav button {
     border: 3px solid black;
     padding: 5%;
 }
+
+nav a {
+    margin: 0.25em auto 0em 1em;
+    
+    
+}
