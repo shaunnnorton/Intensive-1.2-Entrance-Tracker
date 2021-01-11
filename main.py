@@ -1,19 +1,33 @@
-from flask import Flask, render_template, request, redirect, url_for, make_response
+from flask import Flask, render_template, request, redirect, url_for, make_response, send_file
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
 import time
+from fpdf import FPDF
+
 
 load_dotenv()
 
 ADMIN_USERNAME = os.getenv('ADMIN_USERNAME')
 ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
 SECRETKEY = os.getenv('SECRETKEY')
+LOGOPATH = os.getenv('LOGOPATH')
+BUILDINGS = os.getenv('BUILDINGS').strip('[]').split(',')
 
 app = Flask('__main__')
 
 client = MongoClient('mongodb://localhost:27017')
 buildings = client.Attendence.Buildings
+
+
+def populate_buildings():
+    print(buildings.count())
+    if buildings.count() < len(BUILDINGS):
+        for building in BUILDINGS:
+            if buildings.find_one({'name':building}):
+                pass
+            else:
+                buildings.insert_one({'name':building})
 
 @app.route("/")
 def homepage():
@@ -25,6 +39,7 @@ def homepage():
         'lost_user':True,
         'current_Date':time.strftime('%a %b %d, %Y',time.localtime()),
         'current_Time':time.strftime('%I:%M %p',time.localtime()),
+        'path_to_logo':LOGOPATH
     }
     return render_template('base.html',**context)
 
@@ -36,7 +51,8 @@ def logspage(building):
         'current_Date':time.strftime('%a %b %d, %Y',time.localtime()),
         'current_Time':time.strftime('%I:%M %p',time.localtime()),
         'building':building,
-        'lost_user':False
+        'lost_user':False,
+        'path_to_logo':LOGOPATH
     }
     return render_template("base.html",**context)
 
@@ -85,14 +101,14 @@ def add_values():
 
 @app.route("/Logs",methods=['POST'])
 def open_logs():
+    if request.form.get("form_action") == 'download':
+        return redirect('/Logs/Downloads',307)
+    
     if request.cookies.get("SECRETKEY") != SECRETKEY:
         return redirect(url_for('homepage'))   
     list_of_buildings = list()
     for i in buildings.find({},{'name':1}):
         list_of_buildings.append(i['name'])
-    context = {
-        'buildings':list_of_buildings
-    }
     list_of_buildings = list()
     for i in buildings.find({},{'name':1}):
         list_of_buildings.append(i['name'])
@@ -111,11 +127,15 @@ def open_logs():
         if len(day_logs.keys()) > 0:
             for i in list(day_logs[date].keys()):
                 logs.append(f'{i}  {day_logs[date][i]["IN"]}     {day_logs[date][i]["OUT"]}')
-        
+    if building:
+        list_of_buildings.remove(building)    
     context = {
+        'selected_building':building,
+        'selected_date':date,
         'buildings':list_of_buildings,
         'dates':dates,
-        'logs':logs
+        'logs':logs,
+        'path_to_logo':LOGOPATH
     }
     return render_template('logs.html', **context)
 
@@ -128,6 +148,36 @@ def login():
         response.set_cookie('SECRETKEY',SECRETKEY)
         return response
     else:
-        return render_template("message.html",message="Your Username or Password were incorrect.")  
+        return render_template("message.html",message="Your Username or Password were incorrect.") 
+
+
+@app.route("/Logs/Downloads", methods=["POST"])
+def download_logs():
+    date = request.form.get('date')
+    building = request.form.get('building')
+    if request.cookies.get("SECRETKEY") == SECRETKEY:
+        path = ''
+        logs = list()
+        pdf = FPDF()
+        if date:
+            data = buildings.find_one({'name':building},{date:1,"_id":0})
+            print(data)
+            if len(data.keys()) > 0:
+                for i in list(data[date].keys()):
+                    logs.append(f'{i}  {data[date][i]["IN"]}     {data[date][i]["OUT"]}')
+        
+            pdf.add_page()
+            pdf.set_font('Arial', 'B', 16)
+            pdf.cell(0,5,building,0,2,"C")
+            pdf.cell(0,5,date,0,2,"C")
+            pdf.cell(0,5,'NAME                 IN       OUT',0,2,"C")
+            for log in logs:
+                pdf.cell(0,5,log,0,2,"C")
+        response = make_response(pdf.output(dest='S'))
+        response.headers.set('Content-Disposition', 'attachment', filename='name' + '.pdf')
+        response.headers.set('Content-Type', 'application/pdf')  
+        return response
+    return render_template('message.html',message='You Dont Have Permission for That.')
 if __name__ == "__main__":
+    populate_buildings()
     app.run(debug=True)

@@ -17,10 +17,11 @@
             <input type="text" name="Password" id="PW">
             <button>Sign In</button>
         </form>
-        <a href="{{url_for('homepage')}}"><img src="https://via.placeholder.com/75" alt=""></a>
+        <a href="{{url_for('homepage')}}"><img src="{{path_to_logo}}" alt=""></a>
     </nav>
     <form action="" method="POST">
-        <select name="building" id="BLD">
+        <select name="building" id="BLD" value={{selected_building}}>
+            <option value="{{selected_building}}">{{selected_building}}</option>
             {% for building in buildings %}
             <option value="{{building}}">{{building}}</option>
             {% endfor %}
@@ -32,8 +33,11 @@
             {% endfor %}
         </select>
         {% endif %}
-        <button>GO</button>
+        <button value="show_logs" name="form_action" id="NXT">GO</button>
+        <button value="download" name="form_action" id="DWN">Download</button>
     </form>
+    <h4>{{selected_building}}-{{selected_date}}</h4>
+    <h5>NAME------------IN-----OUT</h5>
     <ul>
         {% for item in logs %}
         <li>{{item}}</li>
@@ -41,4 +45,5 @@
     </ul>
 </body>
 <script src="static/main.js"></script>
+<script src="static/logs.js"></script>
 </html>
