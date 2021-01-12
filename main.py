@@ -15,7 +15,7 @@ LOGOPATH = os.getenv('LOGOPATH')
 BUILDINGS = os.getenv('BUILDINGS').strip('[]').split(',')
 MONGOURL = os.getenv('MONGOURL')
 
-app = Flask('__main__')
+app = Flask('__name__')
 app.config['EXPLAIN_TEMPLATE_LOADING'] = True
 client = MongoClient(MONGOURL)
 buildings = client.Attendence.Buildings
