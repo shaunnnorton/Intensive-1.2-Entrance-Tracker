@@ -13,19 +13,58 @@ nav {
     top: 0;
     display: flex;
     flex-direction: row-reverse;
-    height: 5vh;
+    height: fit-content;
+    background: lightgray;
 }
 nav button {
     margin-right: 3%;
+    border-radius: 50%;
+    background-color: white;
 }
 
 #inout {
     border: 3px solid black;
-    padding: 5%;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    padding-left: 5em ;
+    padding-right: 5em;
+    border-radius: 10%;
+    background-color: white;
 }
+
+#inout h1,h3{
+    margin: 0;
+    padding: 0;
+}
+
+#inout input ,select{
+    border: solid black 1px ;
+    border-radius: 0;
+}
+
+#inout button{
+    width: 45%;
+}
+
+#buttons-area {
+    display: flex;
+}
+
+
+#inbutton {
+    margin-right: auto;
+    align-self: flex-start;
+    background-color:rgb(231, 231, 231);
+}
+
+
+#outbutton {
+    margin-left: auto;
+    align-self: flex-end;
+    background-color:rgb(231, 231, 231);
+}
+
 
 nav a {
     margin: 0.25em auto 0em 1em;
-    
-    
 }
