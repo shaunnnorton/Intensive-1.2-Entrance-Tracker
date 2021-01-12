@@ -84,7 +84,9 @@ def add_values():
                 return render_template('message.html',message=message)
         if INOROUT == "OUT":
             working_building = buildings.find_one({'name': building},{'_id':0,date:1})
-            #return working_building
+            if first_name+' '+last_name not in working_building[date]:
+                message = 'Error: The name you entered has not signed in.'
+                return render_template('message.html',message=message)
             if date in working_building:
                 working_building[date][first_name+' '+last_name]['OUT'] = time
                 buildings.update_one({'name': building},{ '$set':{date: working_building[date]}})

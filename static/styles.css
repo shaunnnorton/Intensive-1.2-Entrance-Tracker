@@ -7,19 +7,35 @@ body{
     align-items: center;
 }
 
+#signin_form {
+    position: absolute;
+    top: 15px;
+    right: 100px;
+    background-color: wheat;
+    padding: 10px;
+    border: black inset 3px;
+
+}
+
+#signin_form input {
+    border: black solid 1px;
+}
+
 nav {
     width: 100vw;
     position: fixed;
     top: 0;
     display: flex;
     flex-direction: row-reverse;
-    height: fit-content;
+    height: 10%;
     background: lightgray;
+    align-items: center;
 }
 nav button {
     margin-right: 3%;
     border-radius: 50%;
     background-color: white;
+    height: 80%;
 }
 
 #inout {
