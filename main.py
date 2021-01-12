@@ -16,7 +16,7 @@ BUILDINGS = os.getenv('BUILDINGS').strip('[]').split(',')
 MONGOURL = os.getenv('MONGOURL')
 
 app = Flask('__name__')
-app.config['EXPLAIN_TEMPLATE_LOADING'] = True
+
 client = MongoClient(MONGOURL)
 buildings = client.Attendence.Buildings
 
@@ -32,6 +32,12 @@ def populate_buildings():
 
 @app.route("/")
 def homepage():
+    admin_state = 'Sign In'
+    if request.cookies.get('SECRETKEY') == SECRETKEY:
+        admin_state = "Sign Out"
+    else:
+        admin_state = 'Sign In'
+
     list_of_buildings = list()
     for i in buildings.find({},{'name':1}):
         list_of_buildings.append(i['name'])
@@ -40,7 +46,8 @@ def homepage():
         'lost_user':True,
         'current_Date':time.strftime('%a %b %d, %Y',time.localtime()),
         'current_Time':time.strftime('%I:%M %p',time.localtime()),
-        'path_to_logo':LOGOPATH
+        'path_to_logo':LOGOPATH,
+        'admin_state':admin_state
     }
     return render_template('base.html',**context)
 
@@ -48,12 +55,19 @@ def homepage():
 
 @app.route('/<building>')
 def logspage(building):
+    admin_state = 'Sign In'
+    if request.cookies.get('SECRETKEY') == SECRETKEY:
+        admin_state = "Sign Out"
+    else:
+        admin_state = 'Sign In'
+
     context={
         'current_Date':time.strftime('%a %b %d, %Y',time.localtime()),
         'current_Time':time.strftime('%I:%M %p',time.localtime()),
         'building':building,
         'lost_user':False,
-        'path_to_logo':LOGOPATH
+        'path_to_logo':LOGOPATH,
+        'admin_state':admin_state
     }
     return render_template("base.html",**context)
 
@@ -104,6 +118,13 @@ def add_values():
 
 @app.route("/Logs",methods=['POST'])
 def open_logs():
+    admin_state = 'Sign In'
+    if request.cookies.get('SECRETKEY') == SECRETKEY:
+        admin_state = "Sign Out"
+    else:
+        admin_state = 'Sign In'
+
+    
     if request.form.get("form_action") == 'download':
         return redirect('/Logs/Downloads',307)
     
@@ -138,7 +159,8 @@ def open_logs():
         'buildings':list_of_buildings,
         'dates':dates,
         'logs':logs,
-        'path_to_logo':LOGOPATH
+        'path_to_logo':LOGOPATH,
+        'admin_state':admin_state
     }
     return render_template('logs.html', **context)
 
@@ -146,6 +168,13 @@ def open_logs():
 def login():
     username = request.form.get('Username')
     password = request.form.get('Password')
+    method_used = request.form.get('admin_state')
+    print(request.form)
+    if method_used == 'Sign Out':
+        response = make_response(redirect(url_for('homepage')))
+        response.set_cookie('SECRETKEY',SECRETKEY, max_age=0)
+        return response
+
     if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
         response = make_response(redirect(url_for('open_logs',_method="POST"),307))
         response.set_cookie('SECRETKEY',SECRETKEY)

@@ -9,7 +9,7 @@
 </head>
 <body>
     <nav>
-        <button id="SIBUTTON">Sign IN</button>
+        <form action="/login" method="POST" id="BUTTONFORM"><button id="SIBUTTON" value="{{admin_state}}" name="admin_state">{{admin_state}}</button></form>
         <form action="{{url_for('login')}}" id="signin_form" method="POST">
             <h2>Username:</h2>
             <input type="text" name="Username" id="UN">

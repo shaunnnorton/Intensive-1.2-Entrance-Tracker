@@ -21,6 +21,14 @@ body{
     border: black solid 1px;
 }
 
+#BUTTONFORM{
+    margin-right: 3%;
+    height: 80%;
+    display: flex;
+    align-items: center;
+}
+
+
 nav {
     width: 100vw;
     position: fixed;
@@ -31,11 +39,13 @@ nav {
     background: lightgray;
     align-items: center;
 }
-nav button {
+nav form button {
     margin-right: 3%;
     border-radius: 50%;
     background-color: white;
     height: 80%;
+    padding: 0%;
+    margin: 0%;
 }
 
 #inout {
