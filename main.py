@@ -13,10 +13,11 @@ ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
 SECRETKEY = os.getenv('SECRETKEY')
 LOGOPATH = os.getenv('LOGOPATH')
 BUILDINGS = os.getenv('BUILDINGS').strip('[]').split(',')
+MONGOURL = os.getenv('MONGOURL')
 
 app = Flask('__main__')
 
-client = MongoClient('mongodb://localhost:27017')
+client = MongoClient(MONGOURL)
 buildings = client.Attendence.Buildings
 
 

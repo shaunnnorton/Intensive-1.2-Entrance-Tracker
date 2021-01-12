@@ -26,8 +26,6 @@ Place a file named **confing.env** inside the root directory. This file should i
 * The path to the logo you want to appear in the upper left labeled LOGOPATH
 * A list of the buildings to be tracked labeled BUILDINGS
 * A URL to the Mongo DB database under MONGOURL
-* The password for the Mongo DB under MONGO_PASSWORD
-* The username for the Mongo DB under MONGO_USERNAME
 
 For formating help view the **example_config.env** file.
 
