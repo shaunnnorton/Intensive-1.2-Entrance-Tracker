@@ -6,7 +6,7 @@ import time
 from fpdf import FPDF
 
 
-load_dotenv()
+load_dotenv('config.env')
 
 ADMIN_USERNAME = os.getenv('ADMIN_USERNAME')
 ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
@@ -21,7 +21,7 @@ buildings = client.Attendence.Buildings
 
 
 def populate_buildings():
-    print(buildings.count())
+    #print(buildings.count())
     if buildings.count() < len(BUILDINGS):
         for building in BUILDINGS:
             if buildings.find_one({'name':building}):

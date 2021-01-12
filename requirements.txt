@@ -1,8 +1,13 @@
 click==7.1.2
 Flask==1.1.2
+fpdf2==2.0.6
+future==0.18.2
 itsdangerous==1.1.0
 Jinja2==2.11.2
 MarkupSafe==1.1.1
+numpy==1.19.5
+Pillow==8.0.0
 pymongo==3.11.2
 python-dotenv==0.15.0
+six==1.15.0
 Werkzeug==1.0.1
